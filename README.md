@@ -1,4 +1,5 @@
 # EurExchangeRate
+[![CircleCI](https://circleci.com/gh/andrelip/eur-exchange-rate.svg?style=svg)](https://circleci.com/gh/andrelip/eur-exchange-rate)
 
 To start your Phoenix server:
 
