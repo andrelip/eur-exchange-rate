@@ -43,6 +43,7 @@ defmodule EurExchangeRate.Mixfile do
       {:credo, "~> 0.10.0", only: [:dev, :test], runtime: false},
       {:dialyxir, "~> 0.5", only: [:dev, :test], runtime: false},
       {:hackney, "~> 1.0"},
+      {:meeseeks, "~> 0.10.1"},
       {:cowboy, "~> 1.0"}
     ]
   end
