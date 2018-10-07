@@ -1,4 +1,4 @@
-defmodule E do
+defmodule EurReferenceRate do
   @moduledoc """
   EurReferenceRate keeps the contexts that that are responsible
   to retrieve and persist Eur exchange rate.
@@ -9,7 +9,54 @@ defmodule E do
 
   @url "https://www.ecb.europa.eu/stats/eurofxref/eurofxref-hist-90d.xml"
 
-  def get_rate do
+  @doc """
+  Get a up to date list of exchange rates
+  iex> EurReferenceRate.current
+  [
+    %{currency: "USD", rate: #Decimal<1.1506>, reference_date: ~D[2018-10-05]},
+    %{currency: "JPY", rate: #Decimal<131.03>, reference_date: ~D[2018-10-05]},
+    %{currency: "BGN", ...},
+    %{...},
+    ...
+  ]
+  """
+  def current do
+    list = last90d()
+    most_recent_date = list |> List.first() |> Map.get(:reference_date)
+    list |> Enum.filter(&(&1[:reference_date] == most_recent_date))
+  end
+
+  @doc """
+  Get the up to date exchange rate of a given currency
+
+  iex> EurReferenceRate.current("USD")
+  #Decimal<1.1696>
+
+  Available options:
+  ["USD", "JPY", "BGN", "CZK", "DKK", "GBP", "HUF", "PLN", "RON", "SEK", "CHF",
+  "ISK", "NOK", "HRK", "RUB", "TRY", "AUD", "BRL", "CAD", "CNY", "HKD", "IDR",
+  "ILS", "INR", "KRW", "MXN", "MYR", "NZD", "PHP", "SGD", "THB", "ZAR"]
+  """
+  def current(currency) do
+    last90d()
+    |> Enum.sort_by(& &1[:reference_date])
+    |> Enum.find(&(&1[:currency] |> String.downcase() == currency |> String.downcase()))
+    |> Map.get(:rate)
+  end
+
+  @doc """
+  Requests European Central Bank and returns a list of ratings from the last 90 days.
+
+  iex> EurReferenceRate.last90d
+  [
+    %{currency: "USD", rate: #Decimal<1.1506>, reference_date: ~D[2018-10-05]},
+    %{currency: "JPY", rate: #Decimal<131.03>, reference_date: ~D[2018-10-05]},
+    %{currency: "BGN", ...},
+    %{...},
+    ...
+  ]
+  """
+  def last90d do
     Logger.debug("EurReferenceRate downloading new data from #{@url}")
 
     with {:ok, 200, _headers, client_ref} <- :hackney.get(@url, [], "", follow_redirect: true),
