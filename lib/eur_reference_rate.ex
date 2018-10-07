@@ -57,12 +57,14 @@ defmodule EurReferenceRate do
   ]
   """
   def last90d do
-    Logger.debug("EurReferenceRate downloading new data from #{@url}")
+    Logger.debug(fn ->
+      "EurReferenceRate downloading new data from #{@url}"
+    end)
 
     with {:ok, 200, _headers, client_ref} <- :hackney.get(@url, [], "", follow_redirect: true),
          {:ok, body} <- :hackney.body(client_ref),
          {:ok, parsed_text} <- parse_xml(body) do
-      Logger.debug("EurReferenceRate data downloaded.")
+      Logger.debug(fn -> "EurReferenceRate data downloaded" end)
       parsed_text
     else
       {:ok, code, _, _} -> {:error, "Error requesting the rate. Response with code #{code}"}
@@ -71,14 +73,15 @@ defmodule EurReferenceRate do
   end
 
   defp parse_xml(raw_data) do
-    try do
-      parsed_data = parse_xml!(raw_data)
-      {:ok, parsed_data}
-    rescue
-      _ ->
-        Logger.debug("EurReferenceRate couldn't parse xml:\n #{raw_data}")
-        {:error, "couldn't parse text"}
-    end
+    parsed_data = parse_xml!(raw_data)
+    {:ok, parsed_data}
+  rescue
+    _ ->
+      Logger.debug(fn ->
+        "EurReferenceRate couldn't parse xml:\n #{raw_data}"
+      end)
+
+      {:error, "couldn't parse text"}
   end
 
   defp parse_xml!(data) do
@@ -90,7 +93,7 @@ defmodule EurReferenceRate do
   end
 
   defp parse_month(month) do
-    reference_date = attr(month, "time") |> Date.from_iso8601!()
+    reference_date = month |> attr("time") |> Date.from_iso8601!()
 
     month
     |> all("//Cube/*")
@@ -100,8 +103,8 @@ defmodule EurReferenceRate do
   defp format_rate_node(node, reference_date) do
     %{
       reference_date: reference_date,
-      currency: attr(node, "currency"),
-      rate: attr(node, "rate") |> Decimal.new()
+      currency: node |> attr("currency"),
+      rate: node |> attr("rate") |> Decimal.new()
     }
   end
 end

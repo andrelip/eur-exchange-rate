@@ -1,4 +1,10 @@
 defmodule XmlNode do
+  @moduledoc """
+  Helper module to interact with xmerl_demo
+
+  See more:
+  https://gist.github.com/sasa1977/5967224
+  """
   require Record
 
   Record.defrecord(

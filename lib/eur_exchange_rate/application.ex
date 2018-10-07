@@ -1,4 +1,7 @@
 defmodule EurExchangeRate.Application do
+  @moduledoc """
+  EurExchangeRate.Application entry point
+  """
   use Application
 
   # See https://hexdocs.pm/elixir/Application.html
@@ -11,7 +14,7 @@ defmodule EurExchangeRate.Application do
       # Start the Ecto repository
       supervisor(EurExchangeRate.Repo, []),
       # Start the endpoint when the application starts
-      supervisor(EurExchangeRateWeb.Endpoint, []),
+      supervisor(EurExchangeRateWeb.Endpoint, [])
       # Start your own worker by calling: EurExchangeRate.Worker.start_link(arg1, arg2, arg3)
       # worker(EurExchangeRate.Worker, [arg1, arg2, arg3]),
     ]
