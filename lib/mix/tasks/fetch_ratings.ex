@@ -1,4 +1,5 @@
 defmodule Mix.Tasks.FetchRatings do
+  @moduledoc false
   use Mix.Task
   alias EurExchangeRate.Exchange
 
